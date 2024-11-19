@@ -208,25 +208,6 @@ function doubt(socket, { roomName }) {
     broadcastRoomState(roomName);
 }
 
-function isValidBid(newBid, currentBid) {
-    if (!currentBid) return true;
-    if ((newBid.count < currentBid.count && newBid.count <= currentBid.count) || newBid.value < currentBid.value) {
-        return false;
-    }
-    return true;
-}
-
-function timeoutHandle({ id, room }) {
-    if (!rooms[room]) return
-    const game = rooms[room].game
-    if (!game) return
-
-    game.players = game.players.filter(p => p.id !== id);
-    
-    if (game.players.length === 1) endGame(room, game.players[0])
-    else broadcastRoomState(room, 'loose', { user: rooms[room].players[id] })
-}
-
 function unmountUser(socket) {
     watchers.delete(socket);
 
@@ -276,10 +257,6 @@ io.on('connection', (socket) => {
         watchers.add(socket);
         updateRoomList();
     });
-
-    socket.on('timeout', (data) => {
-        timeoutHandle(data)
-    })
 
     socket.on('disconnect', () => {
         unmountUser(socket)
