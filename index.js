@@ -31,7 +31,7 @@ function updateRoomList() {
     watchers.forEach(socket => socket.emit('list', { rooms: Object.values(rooms) }));
 }
 
-function createRoom(socket, { name, password, player, number }) {
+function createRoom(socket, { name, password, player, number, probs }) {
     if (rooms[name]) {
         return socket.emit('error', { message: 'Комната уже существует' });
     }
@@ -41,6 +41,7 @@ function createRoom(socket, { name, password, player, number }) {
         password,
         number,
         players: {[player.id]: player},
+        probs,
         game: null
     };
     updateRoomList();
